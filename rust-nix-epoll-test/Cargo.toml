@@ -1,0 +1,11 @@
+[package]
+name = "rust-nix-epoll-test"
+version = "0.1.0"
+authors = ["Jing Peng <pj.hades@gmail.com>"]
+
+[dependencies.nix]
+version = "0.8.1"
+features = ["signalfd"]
+
+[dependencies]
+inotify = "0.4.1" 
