@@ -8,7 +8,7 @@ extern crate nix;
 use inotify::{Inotify, watch_mask};
 use nix::sys::epoll::{epoll_create, epoll_ctl, epoll_wait,
                       EpollOp, EpollEvent, EPOLLIN};
-use nix::sys::signal::{pthread_sigmask, SigmaskHow, SigSet, SIGUSR1};
+use nix::sys::signal::{SigSet, SIGUSR1};
 use nix::sys::signalfd::SignalFd;
 use nix::unistd;
 use std::os::unix::io::AsRawFd;
@@ -24,10 +24,9 @@ fn main() {
     // create signalfd, watch SIGUSR1
     let mut mask = SigSet::empty();
     mask.add(SIGUSR1);
+    // mask the watched signals
     mask.thread_block().unwrap();
     let mut sgfd = SignalFd::new(&mask).unwrap();
-    // mask the watched signals
-    pthread_sigmask(SigmaskHow::SIG_BLOCK, Some(&mask), None).unwrap();
 
     // create inotify
     let mut inotify = Inotify::init().unwrap();
