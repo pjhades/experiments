@@ -1,0 +1,8 @@
+[package]
+name = "rust-watch-restart-child"
+version = "0.1.0"
+authors = ["Jing Peng <pj.hades@gmail.com>"]
+
+[dependencies.nix]
+version = "0.8.1"
+features = ["signalfd"]
