@@ -1,7 +1,6 @@
 #!/usr/bin/awk -f
-# for part 2, run `echo XXX | ./1.awk -v divisor=2`
 {
-    step = divisor ? length($0) / divisor : 1;
+    step = part == 1 ? 1 : length($0) / 2;
     s = sprintf("%s%s", $0, $0);
     split(s, a, "");
     sum = 0;
