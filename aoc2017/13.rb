@@ -8,11 +8,10 @@ end
 
 def pos(time, range)
     if (time / (range - 1)) % 2 == 0
-        p = time % (range - 1)
+        time % (range - 1)
     else
-        p = (range - 1) - (time % (range - 1))
+        (range - 1) - (time % (range - 1))
     end
-    return p
 end
 
 def caught_at(time)
