@@ -8,14 +8,6 @@ def rotate(pattern)
     flip(pattern).map{|row| row.split('')}.transpose.map{|row| row.join}
 end
 
-def add_rule(rules, from, to)
-    4.times do
-        from = rotate(from)
-        rules[from] = to
-    end
-    rules[flip(from)] = to
-end
-
 def find_match(pattern, rules)
     p = pattern
     4.times do
