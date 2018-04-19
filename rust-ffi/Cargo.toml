@@ -1,0 +1,8 @@
+[package]
+name = "rust-ffi"
+version = "0.1.0"
+authors = ["Jing Peng <pj.hades@gmail.com>"]
+build = "build.rs"
+
+[dependencies]
+libc = "0.2"
