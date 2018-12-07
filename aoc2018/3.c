@@ -1,5 +1,3 @@
-// With a little basic knowledge of data structures you can do this in O(N*M).
-// I do not understand why you only choose your O(N*M*M) brute force.
 #include <stdio.h>
 #include <stdlib.h>
 
