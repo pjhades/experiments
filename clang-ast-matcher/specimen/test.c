@@ -1,6 +1,4 @@
-void f() {}
-void g() { f(); }
-void h() { f(); g(); }
+#include "lib.h"
 int main() {
     f();
     g();
