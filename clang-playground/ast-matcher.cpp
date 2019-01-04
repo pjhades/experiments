@@ -1,4 +1,7 @@
+#include <fstream>
 #include <iostream>
+#include <string>
+#include <vector>
 
 #include "clang/ASTMatchers/ASTMatchers.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
@@ -24,8 +27,23 @@ public:
 };
 
 int main(int argc, const char **argv) {
+    std::ifstream file("files");
+    if (!file.is_open()) {
+        std::cerr << "failed to open file list" << std::endl;
+        return 1;
+    }
+
+    std::vector<std::string> vec;
+    std::string s;
+    while (true) {
+        file >> s;
+        if (file.eof())
+            break;
+    }
+
     CommonOptionsParser opt_parser(argc, argv, opt_cat);
-    ClangTool tool(opt_parser.getCompilations(), opt_parser.getSourcePathList());
+    //ClangTool tool(opt_parser.getCompilations(), opt_parser.getSourcePathList());
+    ClangTool tool(opt_parser.getCompilations(), ArrayRef<std::string>(s));
 
     // Match functions that call function named `f`
     DeclarationMatcher fn_matcher = functionDecl(hasDescendant(callExpr(callee(functionDecl(hasName("f"))))))
@@ -35,4 +53,5 @@ int main(int argc, const char **argv) {
     MatchFinder finder;
     finder.addMatcher(fn_matcher, &cb);
     return tool.run(newFrontendActionFactory(&finder).get());
+    return 0;
 }
