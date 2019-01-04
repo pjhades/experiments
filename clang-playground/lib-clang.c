@@ -1,6 +1,8 @@
+#include <assert.h>
 #include <err.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <clang-c/Index.h>
 
 bool interested[] = {
@@ -24,7 +26,26 @@ bool interested[] = {
     [CXCursor_CallExpr] = true,
 };
 
-enum CXChildVisitResult visitor(CXCursor cursor, CXCursor parent, CXClientData data)
+enum CXChildVisitResult extract_fn_call(CXCursor cursor, CXCursor parent, CXClientData data)
+{
+    enum CXCursorKind kind = clang_getCursorKind(cursor);
+    CXSourceLocation location = clang_getCursorLocation(cursor);
+    if (clang_Location_isInSystemHeader(location))
+        return CXChildVisit_Continue;
+
+    CXString s = clang_getCursorSpelling(cursor);
+
+    if (kind == CXCursor_FunctionDecl && clang_isCursorDefinition(cursor))
+        printf("function %s:\n", clang_getCString(s));
+    else if (kind == CXCursor_CallExpr)
+        printf("  calls function %s\n", clang_getCString(s));
+
+    clang_disposeString(s);
+
+    return CXChildVisit_Recurse;
+}
+
+enum CXChildVisitResult find_interested(CXCursor cursor, CXCursor parent, CXClientData data)
 {
     enum CXCursorKind kind = clang_getCursorKind(cursor);
     CXSourceLocation location = clang_getCursorLocation(cursor);
@@ -59,14 +80,16 @@ enum CXChildVisitResult visitor(CXCursor cursor, CXCursor parent, CXClientData d
 
 int main(int argc, char **argv)
 {
+    if (argc < 2)
+        errx(1, "what da phack");
     CXIndex index = clang_createIndex(0, 1);
-    CXTranslationUnit unit = clang_parseTranslationUnit(index, "1.c",
-            (const char **)argv + 1, argc - 1, NULL, 0, CXTranslationUnit_None);
+    CXTranslationUnit unit = clang_parseTranslationUnit(index, argv[1],
+            (const char **)argv + 2, argc - 2, NULL, 0, CXTranslationUnit_None);
     if (!unit)
         errx(1, "failed to parse");
 
     CXCursor cursor = clang_getTranslationUnitCursor(unit);
-    clang_visitChildren(cursor, visitor, NULL);
+    clang_visitChildren(cursor, extract_fn_call, NULL);
 
     clang_disposeTranslationUnit(unit);
     clang_disposeIndex(index);
