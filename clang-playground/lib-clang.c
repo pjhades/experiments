@@ -89,7 +89,7 @@ int main(int argc, char **argv)
         errx(1, "failed to parse");
 
     CXCursor cursor = clang_getTranslationUnitCursor(unit);
-    clang_visitChildren(cursor, extract_fn_call, NULL);
+    clang_visitChildren(cursor, find_interested, NULL);
 
     clang_disposeTranslationUnit(unit);
     clang_disposeIndex(index);
