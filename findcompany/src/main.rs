@@ -7,7 +7,7 @@ use reqwest::header::{AUTHORIZATION, LINK};
 use json::JsonValue;
 use regex::Regex;
 
-const API: &str = "https://api.github.com/";
+const API: &str = "https://api.github.com";
 
 struct Q {
     client: Client,
@@ -21,62 +21,88 @@ fn parse_json(mut resp: Response) -> JsonValue {
 }
 
 impl Q {
-    fn query(&self, url: Url, params: Option<&[(&str, &str)]>) -> Response {
+    fn new(token: String) -> Self {
+        Q {
+            client: Client::new(),
+            token,
+            total_page: 0,
+            cur_page: 1,
+        }
+    }
+
+    fn query(&self, path: String, params: Option<&[(&str, &str)]>) -> Response {
+        let url = format!("{}/{}", API, path);
+        let url = Url::parse(url.as_str()).expect("failed to parse URL");
         let mut builder = self.client.get(url);
         if let Some(p) = params {
             builder = builder.query(p);
         }
-        builder.header(AUTHORIZATION, format!("token {}", self.token).as_str()).send().unwrap()
+        builder.header(AUTHORIZATION, format!("token {}", self.token).as_str())
+            .send().expect("failed to send request")
     }
 
     fn users_at_location(&mut self, location: &str) -> JsonValue {
+        let resp = self.query("search/users".to_string(),
+                              Some(&[
+                                  ("q", format!("location:{}", location).as_str()),
+                                  ("per_page", "100"),
+                                  ("page", format!("{}", self.cur_page).as_str()),
+                              ]));
+
+        let re = Regex::new(r#"page=(\d+)>; rel="last""#).expect("failed to parse regex");
+        let text = resp.headers().get(LINK).expect("failed to get Link header")
+            .to_str().expect("failed to get Link header string");
+
+        if self.total_page == 0 {
+            let caps = re.captures(text).expect("failed to get captures");
+            self.total_page = caps.get(1).expect("failed to get capture group")
+                .as_str().parse().expect("failed to parse as number");
+        }
+
         self.cur_page += 1;
-
-        let url = Url::parse(API).unwrap().join("search/users").unwrap();
-        let resp = self.query(url, Some(&[
-            ("q", format!("location:{}", location).as_str()),
-            ("per_page", "100"),
-            ("page", format!("{}", self.cur_page).as_str()),
-        ]));
-
-        let re = Regex::new(r#"page=(\d+)>; rel="last""#).unwrap();
-        let text = resp.headers().get(LINK).unwrap().to_str().unwrap();
-        let caps = re.captures(text).unwrap();
-        self.total_page = caps.get(1).unwrap().as_str().parse().unwrap();
-        println!("{}/{} pages", self.cur_page, self.total_page);
 
         let mut j = parse_json(resp);
         if !j.has_key("items") {
             panic!("Request failed. Returned JSON:\n{}", j.pretty(2));
         }
+
         j["items"].take()
     }
 
     fn user_profile(&self, username: &str) -> JsonValue {
-        let url = Url::parse(API).unwrap().join("users/").unwrap().join(username).unwrap();
-        parse_json(self.query(url, None))
+        let path = format!("users/{}", username);
+        parse_json(self.query(path, None))
     }
 }
 
 fn main() {
-    let mut q = Q {
-        client: Client::new(),
-        token: "x".to_string(),
-        total_page: 0,
-        cur_page: 0,
-    };
+    let mut q = Q::new("x".to_string());
+
+    println!("<!DOCTYPE html>\n<html>\n<head></head>\n<body>\n");
 
     loop {
+        println!("<table>");
         for user in q.users_at_location("montreal").members() {
-            let profile = q.user_profile(user["login"].as_str().unwrap());
+            let profile = q.user_profile(user["login"].as_str().expect("failed to get username string"));
             let company = &profile["company"];
             if !company.is_null() {
-                println!("{:-20} {:-20} {}", profile["login"], company, profile["url"]);
+                let s = company.as_str().expect("failed to get company string");
+                if s.as_bytes()[0] == b'@' {
+                    let (_, rest) = s.split_at(1);
+                    println!("  <tr><td>{:-20}</td><td><a href=\"https://github.com/{}\">{}</a></td></tr>", profile["login"], rest, company);
+                }
+                else {
+                    println!("  <tr><td>{:-20}</td><td>{}</td></tr>", profile["login"], company);
+                }
             }
         }
+        println!("</table>");
+        println!("<br />");
 
-        if q.cur_page == q.total_page {
+        if q.cur_page > q.total_page {
             break;
         }
     }
+
+    println!("</body>\n</html>");
 }
