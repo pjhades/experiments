@@ -6,6 +6,7 @@ use reqwest::{Client, Response, Url};
 use reqwest::header::{AUTHORIZATION, LINK};
 use json::JsonValue;
 use regex::Regex;
+use std::env;
 
 const API: &str = "https://api.github.com";
 
@@ -76,7 +77,7 @@ impl Q {
 }
 
 fn main() {
-    let mut q = Q::new("x".to_string());
+    let mut q = Q::new(env::args().nth(1).expect("no access token"));
 
     println!("<!DOCTYPE html>\n<html>\n<head></head>\n<body>\n");
 
