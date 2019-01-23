@@ -1,0 +1,8 @@
+[package]
+name = "syn"
+version = "0.1.0"
+authors = ["Jing Peng <pj.hades@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+syn = { version = "0.15.26", features = ["full", "parsing", "printing", "visit", "extra-traits"] }
