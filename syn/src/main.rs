@@ -10,14 +10,29 @@ struct S {
     callgraph: HashMap<String, String>,
 }
 
+impl S {
+    fn find_fn_calls(&mut self, expr: &syn::Expr) {
+        // not work properly
+        match expr {
+            syn::Expr::Call(ref expr_call) => println!("call: {:?}", expr_call.func),
+            syn::Expr::MethodCall(ref method_call) => println!("method call: {:?}", method_call.method),
+            _ => (),
+        }
+    }
+}
+
 impl<'ast> Visit<'ast> for S {
     fn visit_item_fn(&mut self, f: &'ast syn::ItemFn) {
         println!("function: {}", f.ident);
         for stmt in f.block.stmts.iter() {
+            // need recursively search for function calls in all possible stmt types
             match stmt {
-                syn::Stmt::Expr(ref expr) => println!("{:?}", expr),
-                syn::Stmt::Semi(ref expr, _) => println!("{:?}", expr),
-                _ => (),
+                syn::Stmt::Expr(ref expr) |
+                syn::Stmt::Semi(ref expr, _) => {
+                    println!("expr: {:#?}", expr);
+                    self.find_fn_calls(expr)
+                }
+                s @ _ => println!("whatever: {:#?}", s),
             }
         }
         visit::visit_item_fn(self, f);
