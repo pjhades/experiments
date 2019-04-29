@@ -9,8 +9,8 @@
 struct Queue {
     size_t cap;
     atomic_size_t size;
-    atomic_size_t head;
-    atomic_size_t tail;
+    size_t head;
+    size_t tail;
     int data[0];
 };
 
