@@ -90,14 +90,15 @@ void *consumer(void *data) {
 }
 
 int main(int argc, char **argv) {
-    if (argc != 2)
-        errx(1, "usage: exec QUEUE_CAP");
+    if (argc != 3)
+        errx(1, "usage: exec QUEUE_CAP N_ITEMS");
 
     pthread_t p, c1, c2;
-    size_t cap, n_items = 10;
+    size_t cap, n_items;
     atomic_size_t n_consumed = 0;
     struct Queue *q;
 
+    n_items = strtol(argv[2], NULL, 10);
     cap = strtol(argv[1], NULL, 10);
     q = q_new(cap);
 
