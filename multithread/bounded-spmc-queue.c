@@ -51,7 +51,7 @@ void *producer(void *data) {
         }
 
         q->data[tail] = i;
-        printf("producer: produce %u\n", i);
+        printf("producer %u\n", i);
 
         i++;
     }
@@ -82,7 +82,7 @@ void *consumer(void *data) {
         }
 
         atomic_fetch_add_explicit(arg->n_consumed, 1, memory_order_relaxed);
-        printf("consumer %u: consume %u\n", arg->consumer_id, q->data[head]);
+        printf("consumer%u %u\n", arg->consumer_id, q->data[head]);
     }
 
 
