@@ -5,7 +5,7 @@
 int uf[N*M];
 int n, m;
 char map[N][M];
-int dir[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+int dir[2][2] = {{-1, 0}, {0, -1}};
 
 void u(int x, int y) {
     if (x == y)
@@ -21,8 +21,13 @@ void u(int x, int y) {
 }
 
 int f(int x) {
-    int i;
+    int i, j, k;
     for (i = x; uf[i] >= 0; i = uf[i]);
+    for (j = x; j != i;) {
+        k = j;
+        j = uf[j];
+        uf[k] = i;
+    }
     return i;
 }
 
@@ -37,7 +42,7 @@ int main() {
         for (int j = 0; j < m; j++) {
             if (map[i][j] == '0')
                 continue;
-            for (int k = 0; k < 4; k++) {
+            for (int k = 0; k < 2; k++) {
                 int ni = i + dir[k][0], nj = j + dir[k][1];
                 if (ni < 0 || ni >= n || nj < 0 || nj >= m || map[ni][nj] == '0')
                     continue;
