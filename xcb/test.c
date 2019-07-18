@@ -10,15 +10,17 @@ int main() {
     xcb_window_t win;
     xcb_gcontext_t foreground;
     xcb_generic_event_t *event;
+    xcb_generic_error_t *error;
     xcb_screen_iterator_t iter;
+    xcb_get_selection_owner_cookie_t getsel_cookie;
+    xcb_get_selection_owner_reply_t *getsel_reply;
+    xcb_get_property_cookie_t getprop_cookie;
+    xcb_get_property_reply_t *getprop_reply;
+    int proplen;
+    char *propval;
     int screennum;
     uint32_t mask = 0;
     uint32_t values[2] = {0};
-
-    xcb_rectangle_t rectangles[] = {
-        {10, 50, 40, 20},
-        {80, 50, 10, 40},
-    };
 
     conn = xcb_connect(NULL, &screennum);
     assert(conn);
@@ -38,41 +40,29 @@ int main() {
     printf("white: %ld\n", screen->white_pixel);
     printf("black: %ld\n", screen->black_pixel);
 
-    foreground = xcb_generate_id(conn);
-    mask = XCB_GC_FOREGROUND | XCB_GC_GRAPHICS_EXPOSURES;
-    values[0] = screen->black_pixel;
-    values[1] = 0;
-    xcb_create_gc(conn, foreground, win, mask, values);
-
-    /* create new window */
-    win = xcb_generate_id(conn);
-    mask = XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK;
-    values[0] = screen->white_pixel;
-    values[1] = XCB_EVENT_MASK_EXPOSURE;
-    xcb_create_window(conn,
-                      XCB_COPY_FROM_PARENT,
-                      win,
-                      screen->root,
-                      0, 0,
-                      300, 300,
-                      10,
-                      XCB_WINDOW_CLASS_INPUT_OUTPUT,
-                      screen->root_visual,
-                      mask,
-                      values);
-    xcb_map_window(conn, win);
-    xcb_flush(conn);
-
-    while (event = xcb_wait_for_event(conn)) {
-        switch (event->response_type & ~0x80) {
-            case XCB_EXPOSE:
-                xcb_poly_rectangle(conn, win, foreground, 2, rectangles);
-                xcb_flush(conn);
-                break;
-            default:
-                break;
-        }
+    getsel_cookie = xcb_get_selection_owner(conn, XCB_ATOM_PRIMARY);
+    getsel_reply = xcb_get_selection_owner_reply(conn, getsel_cookie, &error);
+    if (!getsel_reply) {
+        printf("get selection error: %d\n", error->error_code);
+        return 1;
     }
+
+    getprop_cookie = xcb_get_property(conn,
+                                      0,
+                                      getsel_reply->owner,
+                                      XCB_ATOM_WM_NAME,
+                                      XCB_ATOM_STRING,
+                                      0,
+                                      32);
+    getprop_reply = xcb_get_property_reply(conn, getprop_cookie, &error);
+    if (!getprop_reply) {
+        printf("get property error: %d\n", error->error_code);
+        return 1;
+    }
+
+    proplen = xcb_get_property_value_length(getprop_reply);
+    propval = xcb_get_property_value(getprop_reply);
+    printf("window title: %.*s\n", proplen, propval);
 
     xcb_disconnect(conn);
 
