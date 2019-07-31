@@ -1,13 +1,19 @@
 NB. problem 1
-NB. XXX error should be handled in some way but i don't know right now
 NB. take length, minus 1, then index
-last_element1 =: {~ (-&1)@:#
-NB. reverse, take first
-last_element2 =:(0&{)@:(,~/)
+last_element =: 3 : 0
+if. 0 = #y
+then. ''
+else. ((0&{)@:(,~/)) y
+end.
+)
 
 NB. problem 2
-NB. XXX same, handle error here
-last_but_one_element =: (1&{)@:(,~/)
+last_but_one_element =: 3 : 0
+if. 2 > #y
+then. ''
+else. ((1&{)@:(,~/)) y
+end.
+)
 
 NB. problem 3
 kth_element =: {
