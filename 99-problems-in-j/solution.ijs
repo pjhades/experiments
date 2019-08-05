@@ -1,17 +1,11 @@
 NB. problem 1
-NB. take length, minus 1, then index
-last_element =: 3 : 0
-if. 0 = #y
-then. ''
-else. ((0&{)@:(,~/)) y
-end.
-)
+last_element =: {:
 
 NB. problem 2
 last_but_one_element =: 3 : 0
 if. 2 > #y
-then. ''
-else. ((1&{)@:(,~/)) y
+do. ''
+else. {: }: y
 end.
 )
 
