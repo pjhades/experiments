@@ -16,8 +16,8 @@ NB. problem 4
 number_of_elements =: #
 
 NB. problem 5
-reverse =: ,~/
+reverse =: |.
 
 NB. problem 6
 NB. match with reversed list
-is_palindrome =: -: ,~/
+is_palindrome =: -: |.
