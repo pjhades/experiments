@@ -171,3 +171,13 @@ NB. (g) shape 6 8, tally 6
 NB. (h) shape 3 5, tally 3
 
 NB. Exercise 17
+NB. Repeat only 10 times will be VERY SLOW. There must be a smarter way.
+sier_carpet =: 3 : 0
+a =. y,.y,.y
+b =. y,.(($y)$1),.y
+a,b,a
+)
+
+NB. Exercise 18
+NB. Note that the lower right piece is transposed, looking different from the other two.
+sier_fractal =: 3 : 'y,y,.|:y'
