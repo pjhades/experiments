@@ -274,3 +274,39 @@ NB. (i) domain error, atoms are of different shapes
 NB. (j) unboxed array of 2x2
 NB. (k) a boxed again, linked with items from a
 NB. (l) boxed b linked with boxed b, then the whole is boxed
+
+NB. Exercise 27
+NB. (a) 3^x
+NB. (b) x^3
+NB. (c) pi/x
+NB. (d) sin(2*x)
+NB. (e) 1/sqrt(-(x^2))
+NB. (f) (e^(-(0.5*(y^2))))/sqrt(2*pi)
+NB. (g) x/(1+y)
+NB. (h) x+sin(3)+2*cos(y^x)
+
+NB. Exercise 28
+urpoly =: 3 : '|: 2 1 o./ (2p1%y)*i.y'
+
+NB. Exercise 29
+NB. nested_poly sides levels step
+nested_poly =: 3 : 0
+'sides levels step' =. y
+color =. <.(step * i.-levels) */ 255 255 0
+points =. (step * i.-levels) */ urpoly sides
+_1 _1 1 1 dwin 'nested poly'
+color dpoly points
+
+NB. Exercise 30
+NB. (a) _
+NB. (b) __
+NB. (c) _ 
+NB. (d) NaN error
+NB. (e) _ 
+NB. (f) 0
+NB. (g) _
+NB. (h) 0j_
+NB. (i) _.
+NB. (j) _
+NB. (k) limit error
+NB. (l) 0
