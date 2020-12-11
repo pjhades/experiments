@@ -9,7 +9,7 @@ occup=: center ` 1: @. (5<: [: +/ 2= ,@[)
 update=: center ` empty ` occup @. center
 step=: (1 1,:3 3) update;._3 aug@]
 NB. part 1 is sweet
-NB.echo +/ 2= , step^:_ input
+echo +/ 2= , step^:_ input
 
 delta=: _1 _1,_1 0,_1 1,0 1,1 1,1 0,1 _1,:0 _1
 NB. i j fetch m
