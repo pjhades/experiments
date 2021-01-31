@@ -1,0 +1,19 @@
+cflags = -c -g -Wall -Werror -I include
+ldflags = -lpthread -latomic
+cc = gcc
+
+rule cc
+  depfile = $out.d
+  deps = gcc
+  command = $cc -MMD -MF $out.d $cflags -o $out $in
+
+rule link
+  command = $cc -o $out $in $ldflags
+
+build mutex.o: cc mutex.c
+build main.o: cc main.c
+
+build main: link main.o $
+  mutex.o
+
+default main
