@@ -23,7 +23,7 @@ void mutex_init(struct mutex *mu) {
 
 void mutex_unlock(struct mutex *mu) {
     uint32_t orig = atomic_fetch_sub_explicit(&mu->val, 1, memory_order_relaxed);
-    /* Slow path: there were waiters */
+    /* Slow path: there are waiters */
     if (orig != 1) {
         mu->val = 0;
         futex(&mu->val, FUTEX_WAKE, 1, NULL, NULL, 0);

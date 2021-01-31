@@ -1,4 +1,4 @@
-cflags = -c -g -Wall -Werror -I include
+cflags = -std=c11 -c -g -Wall -Werror -I include
 ldflags = -lpthread -latomic
 cc = gcc
 
