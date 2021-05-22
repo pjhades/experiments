@@ -1,8 +1,8 @@
 CC ?= gcc
-CFLAGS ?= -std=c11 -Wall -Werror -Wextra -g -D_GNU_SOURCE
+CFLAGS ?= -std=c11 -Wall -Werror -Wextra -g
 
-ddd: *.c
-	$(CC) $(CFLAGS) -o $@ $^
+ddd: *.c *.h
+	$(CC) $(CFLAGS) -o $@ *.c
 
 .PHONY: clean
 clean:
