@@ -1,6 +1,6 @@
 #pragma once
 
 struct config {
-    char *prog;
     char *port;
+    int sock;
 };

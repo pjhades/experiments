@@ -1,11 +1,9 @@
-#define _GNU_SOURCE
-
 #include "common.h"
 #include "config.h"
+#include "log.h"
 #include "dns.h"
-#include "udp.h"
+#include "net.h"
 #include <getopt.h>
-#include <stdint.h>
 #include <signal.h>
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -50,16 +48,15 @@ static void daemonize(void)
 
 int main(int argc, char **argv)
 {
-    const struct option long_opts[] = {
+    struct option long_opts[] = {
         {"help", no_argument, NULL, 'H'},
         {"port", required_argument, NULL, 'p'},
         {0, 0, 0, 0},
     };
-    int val;
     struct config conf = {
-        .prog = argv[0],
         .port = DNS_PORT_STR,
     };
+    int val;
 
     while ((val = getopt_long(argc, argv, "p:", long_opts, NULL)) != -1) {
         switch (val) {
@@ -72,8 +69,10 @@ int main(int argc, char **argv)
         }
     }
 
+    log_init(argv[0]);
+    udp_open(&conf);
     daemonize();
-    loop(&conf);
+    net_loop(&conf);
 
     return 0;
 }
