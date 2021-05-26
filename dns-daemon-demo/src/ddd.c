@@ -1,5 +1,4 @@
 #include "common.h"
-#include "config.h"
 #include "log.h"
 #include "dns.h"
 #include "net.h"

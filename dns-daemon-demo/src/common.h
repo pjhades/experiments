@@ -6,3 +6,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <unistd.h>
+
+struct config {
+    char *port;
+    int sock;
+};

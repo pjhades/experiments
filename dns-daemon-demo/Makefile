@@ -7,11 +7,13 @@ ddd: src/*.c src/*.h
 test/test_dns: test/test_dns.c
 	$(CC) $(CFLAGS) -o $@ $^
 
-TESTS := test/test_dns
+UNITTESTS := test/test_dns
+INTEGRATION := test/integration/test_query
 
-test: $(TESTS)
-	$(foreach t,$(TESTS),./$(t);)
+test: $(UNITTESTS)
+	$(foreach t,$(UNITTESTS),./$(t);)
+	$(foreach t,$(INTEGRATION),./$(t);)
 
 .PHONY: clean
 clean:
-	$(RM) src/*.o $(TESTS) ddd
+	$(RM) src/*.o $(UNITTESTS) ddd
