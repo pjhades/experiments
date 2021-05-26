@@ -11,6 +11,7 @@ enum {
     DNS_MSG_MAX_LEN = 512,
 };
 
+/* https://datatracker.ietf.org/doc/html/rfc1035#section-4.1.1 */
 #define DNS_FLAGS_QR     0x8000
 #define DNS_FLAGS_OPCODE 0x7800
 #define DNS_FLAGS_AA     0x0400
@@ -36,6 +37,7 @@ struct dns_header {
 _Static_assert(sizeof(struct dns_header) == 12,
                "dns_header should be 12 bytes");
 
+/* https://datatracker.ietf.org/doc/html/rfc1035#section-3.2.2 */
 enum dns_type {
     DNS_TYPE_A = 1,
 };
@@ -43,6 +45,7 @@ enum dns_type {
 _Static_assert(sizeof(enum dns_type) >= sizeof(uint16_t),
                "dns_type should be at least 2 bytes");
 
+/* https://datatracker.ietf.org/doc/html/rfc1035#section-3.2.4 */
 enum dns_class {
     DNS_CLASS_IN = 1,
 };
