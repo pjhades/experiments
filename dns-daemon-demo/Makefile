@@ -16,4 +16,4 @@ test: $(UNITTESTS)
 
 .PHONY: clean
 clean:
-	$(RM) src/*.o $(UNITTESTS) ddd
+	$(RM) $(UNITTESTS) ddd
