@@ -8,6 +8,7 @@ static bool parse_question(uint8_t **raw, size_t *len,
     struct dns_question *question)
 {
     uint8_t *p = *raw, *end = p + *len;
+    /* scan qname */
     while (p < end && *p != 0)
         p += *p + 1;
     if (p >= end)
@@ -19,6 +20,7 @@ static bool parse_question(uint8_t **raw, size_t *len,
     question->qname = *raw;
     question->qname_len = p - *raw;
 
+    /* scan qtype and qclass */
     if (p + sizeof(struct dns_question_values) > end)
         return false;
     question->vals = (struct dns_question_values *)p;

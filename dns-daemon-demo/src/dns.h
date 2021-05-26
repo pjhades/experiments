@@ -24,12 +24,6 @@ enum dns_opcode {
     DNS_OPCODE_QUERY = 0,
 };
 
-//enum dns_rcode {
-//    DNS_RCODE_NOERROR = 0,
-//    DNS_RCODE_FMTERROR = 1,
-//    DNS_RCODE_NOTIMPL = 4,
-//};
-
 struct dns_header {
     uint16_t id;
     uint16_t flags;
@@ -83,7 +77,6 @@ struct dns_rr {
     } rdata;
 };
 
-/* Currently we're only interested in header and question sections. */
 struct dns_message {
     struct dns_header *header;
     struct dns_question question;

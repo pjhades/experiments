@@ -7,6 +7,8 @@
 #include <sys/socket.h>
 
 enum {
+    /* These numbers are very arbitrary and should be
+     * benchmarked in practical situations. */
     RECV_BATCH = 1024,
     MAX_RETRY = 3,
 };
@@ -67,27 +69,27 @@ static bool handle_request(int sock, struct msg_context *ctx, size_t len)
     dns_make_response(&packet);
 
     struct iovec iovs[] = {
-        (struct iovec){
+        {
             .iov_base = packet.header,
             .iov_len = sizeof(struct dns_header),
         },
-        (struct iovec){
+        {
             .iov_base = packet.question.qname,
             .iov_len = packet.question.qname_len,
         },
-        (struct iovec){
+        {
             .iov_base = packet.question.vals,
             .iov_len = sizeof(struct dns_question_values),
         },
-        (struct iovec){
+        {
             .iov_base = packet.rr.name,
             .iov_len = packet.rr.name_len,
         },
-        (struct iovec){
+        {
             .iov_base = &packet.rr.vals,
             .iov_len = sizeof(struct dns_rr_values),
         },
-        (struct iovec){
+        {
             .iov_base = &packet.rr.rdata.a,
             .iov_len = sizeof(uint32_t),
         },
@@ -100,7 +102,6 @@ static bool handle_request(int sock, struct msg_context *ctx, size_t len)
         .msg_iov = iovs,
         .msg_iovlen = niovs,
     };
-
     size_t nretry = 0, resp_size = 0;
     long nsec = 1;
 
@@ -130,8 +131,8 @@ static bool handle_request(int sock, struct msg_context *ctx, size_t len)
 
 void net_loop(struct config *conf)
 {
-    struct mmsghdr msgs[RECV_BATCH] = {0};
-    struct iovec   iovs[RECV_BATCH] = {0};
+    struct mmsghdr msgs[RECV_BATCH];
+    struct iovec   iovs[RECV_BATCH];
 
     for (int i = 0; i < RECV_BATCH; i++) {
         iovs[i].iov_base = ctx[i].raw;
