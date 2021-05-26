@@ -1,5 +1,5 @@
-CC ?= gcc
-CFLAGS ?= -std=c11 -Wall -Werror -Wextra -g -D_GNU_SOURCE
+CC = gcc
+CFLAGS = -std=c11 -Wall -Werror -Wextra -g -D_GNU_SOURCE
 
 ddd: src/*.c src/*.h
 	$(CC) $(CFLAGS) -o $@ src/*.c
@@ -7,8 +7,8 @@ ddd: src/*.c src/*.h
 test/test_dns: test/test_dns.c
 	$(CC) $(CFLAGS) -o $@ $^
 
-UNITTESTS := test/test_dns
-INTEGRATION := test/integration/test_query
+UNITTESTS = test/test_dns
+INTEGRATION = test/integration/test_query
 
 test: $(UNITTESTS)
 	$(foreach t,$(UNITTESTS),./$(t);)
