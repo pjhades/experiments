@@ -116,7 +116,7 @@ void dns_make_response(struct dns_message *packet)
     packet->header->flags |= DNS_FLAGS_QR;
     packet->header->flags &= ~DNS_FLAGS_AA;
     packet->header->flags &= ~DNS_FLAGS_TC;
-    packet->header->flags &= ~DNS_FLAGS_RA;
+    packet->header->flags |= DNS_FLAGS_RA;
     packet->header->flags &= ~DNS_FLAGS_Z;
     packet->header->flags &= ~DNS_FLAGS_RCODE;
     packet->header->flags = htons(packet->header->flags);
