@@ -131,8 +131,8 @@ static bool handle_request(int sock, struct msg_context *ctx, size_t len)
 
 void net_loop(struct config *conf)
 {
-    struct mmsghdr msgs[RECV_BATCH];
-    struct iovec   iovs[RECV_BATCH];
+    struct mmsghdr msgs[RECV_BATCH] = {0};
+    struct iovec   iovs[RECV_BATCH] = {0};
 
     for (int i = 0; i < RECV_BATCH; i++) {
         iovs[i].iov_base = ctx[i].raw;

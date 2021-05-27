@@ -5,6 +5,7 @@
 - To build and run tests, run `make && make test`.
 - To start the daemon on UDP port 53, run `./ddd`. This requires super user privilege.
 - To start the daemon on an arbitrary port `<PORT>`, run `./ddd -p <PORT>`.
+- To run valgrind against the executable, run `make check`.
 
 ## How to view the logs
 Simple logs are written to syslog,
