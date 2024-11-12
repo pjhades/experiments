@@ -41,14 +41,15 @@ int io_uring_enter(unsigned int fd, unsigned int to_submit, unsigned int min_com
     return syscall(__NR_io_uring_enter, fd, to_submit, min_complete, flags, sig);
 }
 
-int submit_sq(struct ring_context *ctx, int fd, uint8_t *buf, off_t offset) {
+int submit_sq(struct ring_context *ctx, int fd, uint8_t *buf) {
     uint32_t tail = *ctx->sq_tail;
     uint32_t index = tail & *ctx->sq_mask;
     struct io_uring_sqe *sqe = &ctx->sqes[index];
 
     sqe->opcode = IORING_OP_READ;
     sqe->fd = fd;
-    sqe->off = offset;
+    // respect file offset, see io_uring_enter(2)
+    sqe->off = -1;
     sqe->addr = (__u64)buf;
     sqe->len = READ_BLOCK_SIZE;
     ctx->sq_array[index] = index;
@@ -143,14 +144,12 @@ int main(int argc, char **argv) {
     };
 
     uint8_t buf[READ_BLOCK_SIZE];
-    off_t offset = 0;
     while (1) {
-        if (submit_sq(&ctx, fd, buf, offset) < 0)
+        if (submit_sq(&ctx, fd, buf) < 0)
             goto out_close_file;
         int bytes_read = read_cq(&ctx);
         if (bytes_read < 0)
             goto out_close_file;
-        offset += bytes_read;
         printf("%.*s", bytes_read, buf);
         if (bytes_read < READ_BLOCK_SIZE)
             break;
